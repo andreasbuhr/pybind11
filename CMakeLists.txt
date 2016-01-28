@@ -119,8 +119,22 @@ add_library(example SHARED
   ${PYBIND11_EXAMPLES}
 )
 
+add_library(multimoduleA SHARED
+  ${PYBIND11_HEADERS}
+  example/multimodule.h
+  example/multimoduleA.cpp
+)
+
+add_library(multimoduleB SHARED
+  ${PYBIND11_HEADERS}
+  example/multimodule.h
+  example/multimoduleB.cpp
+)
+
 # Don't add a 'lib' prefix to the shared library
 set_target_properties(example PROPERTIES PREFIX "")
+set_target_properties(multimoduleB PROPERTIES PREFIX "")
+set_target_properties(multimoduleA PROPERTIES PREFIX "")
 
 # Always write the output file directly into the 'example' directory (even on MSVC)
 set(CompilerFlags
@@ -131,6 +145,8 @@ set(CompilerFlags
 
 foreach(CompilerFlag ${CompilerFlags})
   set_target_properties(example PROPERTIES ${CompilerFlag} ${PROJECT_SOURCE_DIR}/example)
+  set_target_properties(multimoduleA PROPERTIES ${CompilerFlag} ${PROJECT_SOURCE_DIR}/example)
+  set_target_properties(multimoduleB PROPERTIES ${CompilerFlag} ${PROJECT_SOURCE_DIR}/example)
 endforeach()
 
 if (WIN32)
@@ -196,6 +212,7 @@ foreach(i RANGE ${PYBIND11_FIRSTEXAMPLE} ${PYBIND11_LASTEXAMPLE})
   add_test(NAME example${i} COMMAND ${RUN_TEST} example${i})
 endforeach()
 
+add_test(NAME multimodule COMMAND ${RUN_TEST} multimodule)
 if (PYBIND11_INSTALL)
     install(FILES ${PYBIND11_HEADERS} DESTINATION include/pybind11)
 endif()
